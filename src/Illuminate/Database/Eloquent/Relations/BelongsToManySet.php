@@ -52,6 +52,37 @@ class BelongsToManySet extends Relation
     }
 
     /**
+     * Create or update and return an un-saved instance of the related model.
+     *
+     * @param  array  $attributes
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function add(array $attributes = [])
+    {
+        // TODO: Create a function that checks if a foreign relation exists and add/update it accordingly.
+        // return tap($this->related->newInstance($attributes), function ($instance) {
+        //     $this->setForeignAttributesForCreate($instance);
+        // });
+    }
+
+    /**
+     * Create and return an un-saved instance of the related models.
+     *
+     * @param  iterable  $records
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function addMany($records)
+    {
+        // $instances = $this->related->newCollection();
+
+        // foreach ($records as $record) {
+        //     $instances->push($this->make($record));
+        // }
+
+        // return $instances;
+    }
+
+    /**
      * Set the base constraints on the relation query.
      *
      * @return void
@@ -179,6 +210,17 @@ class BelongsToManySet extends Relation
     }
 
     /**
+     * Parse values for set collumn for a model.
+     *
+     * @param  array  $values
+     * @return string
+     */
+    protected function parseSetValues($values)
+    {
+        return implode(',', $values);
+    }
+
+    /**
      * Get the value of a many-to-many relationship.
      *
      * @param  array  $dictionary
@@ -224,13 +266,30 @@ class BelongsToManySet extends Relation
     }
 
     /**
+     * Set the foreign ID for creating a related model.
+     *
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return void
+     */
+    protected function setForeignAttributesForCreate(Model $model)
+    {
+        if ($this->setIsLocal) {
+            $values = $this->getSet($model, $this->foreignKey);
+            $values[] = $this->getParentKey();
+
+            $model->setAttribute($this->getForeignKeyName(), $this->parseSetValues($values));
+            return;
+        }
+    }
+
+    /**
      * Get the results of the relationship.
      *
      * @return mixed
      */
     public function getResults()
     {
-        return ! is_null($this->getParentKey())
+        return !is_null($this->getParentKey())
             ? $this->query->get()
             : $this->related->newCollection();
     }
