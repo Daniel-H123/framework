@@ -202,6 +202,8 @@ class BelongsToManySet extends Relation
     {
         $foreign = $this->getForeignKeyName();
 
+        // If set is in the local collumn, we can use the mapToDictionary method
+        // to build a dictionary keyed by the result of the foreign query
         if ($this->setIsLocal) {
             return $results->mapToDictionary(function ($result) use ($foreign) {
                 return [$this->getDictionaryKey($result->{$foreign}) => $result];
