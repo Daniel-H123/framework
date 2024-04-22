@@ -24,9 +24,10 @@ class GenericUser implements UserContract
      * Create a new generic User object.
      *
      * @param  array  $attributes
+     * @param  array|null  $columns
      * @return void
      */
-    public function __construct(array $attributes, $columns = null)
+    public function __construct(array $attributes, array $columns = null)
     {
         $this->attributes = $attributes;
         $this->columns = $columns ?? [
